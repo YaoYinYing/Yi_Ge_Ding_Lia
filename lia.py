@@ -39,7 +39,7 @@ def search_next_idiom(former_pinyin, idiom_lib):
     # print(search_pinyin_list)
     next_idiom_list = []
     for item in search_pinyin_list:
-        next_idiom_list += [x['word'] for x in idiom_lib if re.match(r'^' + item + ' ', x['pinyin']) != None]
+        next_idiom_list += [x['word'] for x in idiom_lib if (re.match(r'^' + item + ' ', x['pinyin']) != None) and len(x['word'])==4]
     return next_idiom_list
 
 
@@ -64,9 +64,9 @@ while True:
     print("%s" % idiom_input_sample)
     idiom_trace.append(idiom_input_sample)
     search_test = search_idiom(idiom_input_sample, idiom_lib)
-    # print(search_test)
+    print(search_test)
     extract_pinyin_test = extract_pinyin(search_test)
-    # print("extract_pinyin_test = %s" % extract_pinyin_test)
+    print("extract_pinyin_test = %s" % extract_pinyin_test)
     pinyin_list_test = search_next_idiom(extract_pinyin_test, idiom_lib)
     # print("pinyin_list_test = %s" % pinyin_list_test)
 
