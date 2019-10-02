@@ -3,8 +3,8 @@ import random
 import re
 
 idiom_file = "./chinese-xinhua-master/data/idiom.json"
-replace_char_dict_extract = {"āáǎà": 'a', "ōóǒò": 'o', "ēéěèê": 'e', "īíǐì": 'i', "ūúǔù": 'u', "ǖǘǚǜü": 'v'}
-replace_char_dict_bootstrap = {'a': "āáǎà", 'o': "ōóǒò", 'e': "ēéěèê", 'i': "īíǐì", 'u': "ūúǔù", 'v': "ǖǘǚǜü"}
+replace_char_dict_extract = {"āáǎà": 'a', "ōóǒò": 'o', "ēéěèê": 'e', "īíǐì": 'i', "ūúǔù": 'u', "ǖǘǚǜ": 'v'}
+replace_char_dict_bootstrap = {'a': "āáǎà", 'o': "ōóǒò", 'e': "ēéěèê", 'i': "īíǐì", 'u': "ūúǔù", 'v': "ǖǘǚǜ"}
 
 
 def idiom_lib_init(idiom_file):
@@ -48,8 +48,13 @@ def same_word_linkage(input_idiom, next_idiom_list):
 
 
 def yi_ge_ding_lia(next_idiom_list, same_word_list, idiom_dic):
+
+    end_with_yi_list=[x for x in next_idiom_list if re.search(r'yi$', extract_pinyin(search_idiom(x, idiom_dic))) != None]
     if re.match(r'^yi ', extract_pinyin(search_idiom(next_idiom_list[0], idiom_dic))) != None:
         return "一个顶俩"
+    elif end_with_yi_list.__len__():
+        #print(end_with_yi_list)
+        return random.choice(end_with_yi_list)
     elif same_word_list.__len__() != 0:
         return random.choice(same_word_list)
     elif next_idiom_list.__len__() != 0:
@@ -58,28 +63,35 @@ def yi_ge_ding_lia(next_idiom_list, same_word_list, idiom_dic):
         return 0
 
 
+# idiom_input_sample = "虐老兽心"
 idiom_input_sample = random.choice(idiom_lib)['word']
 idiom_trace = []
+count=1
 while True:
-    print("%s" % idiom_input_sample)
+    print("%s: %s" % (count,idiom_input_sample))
     idiom_trace.append(idiom_input_sample)
     search_test = search_idiom(idiom_input_sample, idiom_lib)
-    print(search_test)
+    #print(search_test)
     extract_pinyin_test = extract_pinyin(search_test)
-    print("extract_pinyin_test = %s" % extract_pinyin_test)
+    #print("extract_pinyin_test = %s" % extract_pinyin_test)
     pinyin_list_test = search_next_idiom(extract_pinyin_test, idiom_lib)
     # print("pinyin_list_test = %s" % pinyin_list_test)
 
     same_word_list_test = same_word_linkage(idiom_input_sample, pinyin_list_test)
-    # print("same_word_list_test = %s" % same_word_list_test)
+    #print("same_word_list_test = %s" % same_word_list_test)
     ygdl_test = yi_ge_ding_lia(pinyin_list_test, same_word_list_test, idiom_lib)
 
     if ygdl_test != "一个顶俩":
         idiom_input_sample = ygdl_test
+        count +=1
     else:
-        print("一个顶俩")
+        count += 1
+
+        print("%s: 一个顶俩" % count)
         idiom_trace.append("一个顶俩")
         print("==============================================================\n\n\n\n")
         print('->'.join(idiom_trace))
-        exit()
+        idiom_input_sample = random.choice(idiom_lib)['word']
+        idiom_trace = []
+        count = 1
     pass
