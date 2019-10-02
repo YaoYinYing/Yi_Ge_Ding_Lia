@@ -9,7 +9,7 @@ replace_char_dict_bootstrap = {'a': "āáǎà", 'o': "ōóǒò", 'e': "ēéěè�
 
 def idiom_lib_init(idiom_file):
     with open(idiom_file, 'r', encoding="utf8") as ir:
-        return json.loads(ir.read())
+        return [x for x in json.loads(ir.read()) if len(x['word'])==4]
 
 
 idiom_lib = idiom_lib_init(idiom_file)
@@ -26,7 +26,7 @@ def extract_pinyin(target_idiom_dic):
     idiom_pinyin = target_idiom_dic['pinyin']
     for item in replace_char_dict_extract:
         idiom_pinyin = re.sub(r'[' + item + ']', replace_char_dict_extract[item], idiom_pinyin)
-    return idiom_pinyin
+    return idiom_pinyin.replace("yie","ye")
 
 
 def search_next_idiom(former_pinyin, idiom_lib):
@@ -54,7 +54,7 @@ def yi_ge_ding_lia(next_idiom_list, same_word_list, idiom_dic):
         return "一个顶俩"
     else:
         end_with_yi_list = [x for x in next_idiom_list if
-                            re.search(r'yi$', extract_pinyin(search_idiom(x, idiom_dic))) != None]
+                            re.search(r' yi\Z', extract_pinyin(search_idiom(x, idiom_dic))) != None]
         if end_with_yi_list.__len__()!=0:
             #print(end_with_yi_list)
             return random.choice(end_with_yi_list)
@@ -66,8 +66,8 @@ def yi_ge_ding_lia(next_idiom_list, same_word_list, idiom_dic):
             return 0
 
 
-idiom_input_sample = "虐老兽心"
-# idiom_input_sample = random.choice(idiom_lib)['word']
+idiom_input_sample = random.choice(idiom_lib)['word']
+# idiom_input_sample = "坚壁清野"
 idiom_trace = []
 count=1
 while True:
@@ -95,7 +95,7 @@ while True:
         if count > 4:
             with open("./record.log", 'a') as record:
                 record.write('->'.join(idiom_trace))
-                record.write("\n==============================================================\n\n\n\n")
+                record.write("\n==============================================================\n\n")
         print("==============================================================\n\n\n\n")
         print('->'.join(idiom_trace))
         idiom_input_sample = random.choice(idiom_lib)['word']
